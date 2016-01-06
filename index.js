@@ -36,7 +36,7 @@ module.exports = function (request, options) {
   .on('field', onField)
   .on('file', onFile)
   .on('close', cleanup)
-  .on('error', onEnd)
+  .on('error', onError)
   .on('finish', onEnd)
 
   busboy.on('partsLimit', function(){
@@ -112,6 +112,7 @@ module.exports = function (request, options) {
     file.filename = filename
     file.transferEncoding = file.encoding = encoding
     file.mimeType = file.mime = mimetype
+    file.on('error', onError)
     ch(file)
   }
 
@@ -129,7 +130,7 @@ module.exports = function (request, options) {
     busboy.removeListener('field', onField)
     busboy.removeListener('file', onFile)
     busboy.removeListener('close', cleanup)
-    busboy.removeListener('error', onEnd)
+    busboy.removeListener('error', onError)
     busboy.removeListener('partsLimit', onEnd)
     busboy.removeListener('filesLimit', onEnd)
     busboy.removeListener('fieldsLimit', onEnd)

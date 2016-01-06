@@ -10,10 +10,10 @@ var busboy = require('./')
 describe('Co Busboy', function () {
   it('should work without autofields', function () {
     return co(function*(){
-      var parts = busboy(request())
-      var part
-      var fields = 0
-      var streams = 0
+      var parts = busboy(request());
+      var part;
+      var fields = 0;
+      var streams = 0;
       while (part = yield parts) {
         if (part.length) {
           assert.equal(part.length, 4)
@@ -32,10 +32,10 @@ describe('Co Busboy', function () {
     return co(function*(){
       var parts = busboy(request(), {
         autoFields: true
-      })
-      var part
-      var fields = 0
-      var streams = 0
+      });
+      var part;
+      var fields = 0;
+      var streams = 0;
       while (part = yield parts) {
         if (part.length) {
           fields++
@@ -55,8 +55,8 @@ describe('Co Busboy', function () {
     return co(function*(){
       var parts = busboy(request(), {
         autoFields: true
-      })
-      var part
+      });
+      var part;
       while (part = yield parts) {
         part.resume()
       }
@@ -70,9 +70,9 @@ describe('Co Busboy', function () {
     return co(function*(){
       var parts = busboy(request(), {
         autoFields: true
-      })
-      var part
-      var streams = 0
+      });
+      var part;
+      var streams = 0;
       while (part = yield parts) {
         streams++
         part.resume()
@@ -86,12 +86,12 @@ describe('Co Busboy', function () {
     return co(function*(){
       var parts = busboy(request(), {
         autoFields: true
-      })
-      var part
+      });
+      var part;
       while (part = yield parts) {
         if (!part.length) part.resume()
-      }
-      assert.equal(parts.field.hasOwnProperty, Object.prototype.hasOwnProperty)
+      };
+      assert.equal(parts.field.hasOwnProperty, Object.prototype.hasOwnProperty);
     })
   })
 
@@ -101,9 +101,9 @@ describe('Co Busboy', function () {
         limits: {
           files: 1
         }
-      })
-      var part
-      var error
+      });
+      var part;
+      var error;
       try {
         while (part = yield parts) {
           if (!part.length) part.resume()
@@ -124,9 +124,9 @@ describe('Co Busboy', function () {
         limits: {
           fields: 1
         }
-      })
-      var part
-      var error
+      });
+      var part;
+      var error;
       try {
         while (part = yield parts) {
           if (!part.length) part.resume()
@@ -147,9 +147,9 @@ describe('Co Busboy', function () {
         limits: {
           parts: 1
         }
-      })
-      var part
-      var error
+      });
+      var part;
+      var error;
       try {
         while (part = yield parts) {
           if (!part.length) part.resume()
@@ -172,7 +172,7 @@ describe('Co Busboy', function () {
             return new Error('invalid csrf token')
           }
         }
-      })
+      });
       var part
       var fields = 0
       try {
@@ -198,7 +198,7 @@ describe('Co Busboy', function () {
             return new Error('invalid filename extension')
           }
         }
-      })
+      });
       var part
       var fields = 0
       try {
@@ -227,7 +227,7 @@ describe('Co Busboy', function () {
     })
 
     it('should checkFile fail', function() {
-      const form = formstream()
+      const form = formstream();
 
       form.field('foo1', 'fengmk2').field('love', 'chair1')
       form.file('file', logfile)
@@ -238,7 +238,7 @@ describe('Co Busboy', function () {
       return co(function*(){
         var parts = busboy(form, {
           checkFile: function (fieldname, fileStream, filename) {
-            var extname = filename && path.extname(filename)
+            var extname = filename && path.extname(filename);
             if (!extname || ['.jpg', '.png'].indexOf(extname.toLowerCase()) === -1) {
               var err = new Error('Invalid filename extension: ' + extname)
               err.status = 400
@@ -255,7 +255,7 @@ describe('Co Busboy', function () {
           try {
             part = yield parts
             if (!part) {
-              break
+              break;
             }
           } catch (e) {
             err = e
@@ -278,7 +278,7 @@ describe('Co Busboy', function () {
     })
 
     it('should checkFile pass', function() {
-      const form = formstream()
+      const form = formstream();
 
       form.field('foo1', 'fengmk2').field('love', 'chair1')
       form.file('file', logfile)
@@ -289,7 +289,7 @@ describe('Co Busboy', function () {
       return co(function*(){
         var parts = busboy(form, {
           checkFile: function (fieldname, fileStream, filename) {
-            var extname = filename && path.extname(filename)
+            var extname = filename && path.extname(filename);
             if (!extname || ['.jpg', '.png', '.log'].indexOf(extname.toLowerCase()) === -1) {
               var err = new Error('Invalid filename extension: ' + extname)
               err.status = 400
@@ -306,7 +306,7 @@ describe('Co Busboy', function () {
           try {
             part = yield parts
             if (!part) {
-              break
+              break;
             }
           } catch (e) {
             err = e
@@ -327,6 +327,26 @@ describe('Co Busboy', function () {
       })
     })
 
+  })
+
+  describe('invalid multipart', function() {
+      it('should throw error', function() {
+          return co(function*(){
+              var parts = busboy(invalidRequest());
+              var part;
+              try {
+                  while (part = yield parts) {
+                      if (!part.length) {
+                          part.resume()
+                      }
+                  }
+
+                  throw new Error('should not run this')
+              } catch (err) {
+                  assert.equal(err.message, 'Part terminated early due to unexpected end of multipart data')
+              }
+          })
+      })
   })
 
   describe('with promise', function() {
@@ -435,6 +455,32 @@ function request() {
     '',
     'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+  ].join('\r\n'))
+
+  return stream
+}
+
+function invalidRequest() {
+  // https://github.com/mscdex/busboy/blob/master/test/test-types-multipart.js
+
+  var stream = new Stream.PassThrough()
+
+  stream.headers = {
+    'content-type': 'multipart/form-data; boundary=---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k'
+  }
+
+  stream.end([
+    '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+    'Content-Disposition: form-data; name="upload_file_0"; filename="1k_a.dat"',
+    'Content-Type: application/octet-stream',
+    '',
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    '-----------------------------invalid',
+    'Content-Disposition: form-data; name="upload_file_2"; filename="hack.exe"',
+    'Content-Type: application/octet-stream',
+    '',
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    '-----------------------------invalid--'
   ].join('\r\n'))
 
   return stream
